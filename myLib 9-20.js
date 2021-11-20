@@ -1574,3 +1574,10 @@ function isEmpty(val, strict) {
 			return val ? false : true;
 	}
 }
+
+function nonBinaryToggle(currentState, states) {
+	return states[(states.indexOf(currentState) + 1) % states.length];
+}
+
+
+
