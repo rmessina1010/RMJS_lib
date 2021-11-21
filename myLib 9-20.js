@@ -95,11 +95,11 @@ function elID(elID, within) {/// deprecate
 	return el;
 }
 
-function __id(id) { if (typeof elID === 'string') { return document.getElementById(id); } }
+function __id(id) { if (typeof id === 'string') { return document.getElementById(id); } }
 
 function __Name(name, within) {
 	if (within === undefined || !within.tagName) { within = document; }
-	if (typeof elID === 'string') { return within.getElementsByName(name); }
+	if (typeof name === 'string') { return within.getElementsByName(name); }
 }
 
 function __name(name, within) { var temp = __Name(name, within); return temp ? temp[0] : temp; }
