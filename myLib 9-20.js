@@ -1576,8 +1576,12 @@ function isEmpty(val, strict) {
 }
 
 function nonBinaryToggle(currentState, states) {
+	// insures values are unique
+	states = states instanceof Set ? states : new Set(states);
+	states = Array.from(states);
 	return states[(states.indexOf(currentState) + 1) % states.length];
 }
+
 
 
 
