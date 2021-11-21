@@ -1582,6 +1582,18 @@ function nonBinaryToggle(currentState, states) {
 	return states[(states.indexOf(currentState) + 1) % states.length];
 }
 
+function cycleThrough(arr, loop = false, start = 0) {
+	let gen = cycleThroughEngine(arr, loop, start);
+	return () => gen.next();
+}
 
+function* cycleThrough(arr, loop = false, start = 0) {
+	for (let i = start, l = arr.length; i < l; i++) {
+		let res = arr[i];
+		if (loop && i >= l - 1) { i = 0; }
+		yield res;
+	}
+	return
+}
 
 
