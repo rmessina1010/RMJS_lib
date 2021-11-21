@@ -1591,4 +1591,10 @@ function* cycleThrough(arr, loop = false, start = 0) {
 	return
 }
 
-
+function prepEvent(self, gen, handler, evName = false) {
+	if (!evName) { return () => { handler(gen.next(), self) } }
+	else {
+		self['on' + evName] = () => { handler(gen.next(), self); }
+		self['on' + evName]();
+	}
+}
