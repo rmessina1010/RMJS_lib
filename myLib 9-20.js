@@ -13,7 +13,7 @@ if (!Element.prototype.matches) {
 ////////
 
 function argArray(args, propName) {
-	if (propName && typeof propName === typeof 'a') { args = args[propName] }
+	if (propName && typeof propName === 'string') { args = args[propName] }
 	if (args === undefined || false) return [];
 	if (typeof args !== typeof []) { args = [args]; }
 	return args;
@@ -81,8 +81,8 @@ function getObjKeys(obj) {
 
 
 function arrFromStr(strOrArr, sep) {
-	if (typeof strOrArr === typeof 'str') {
-		sep = (typeof sep === typeof 'str') ? sep : ',';
+	if (typeof strOrArr === 'string') {
+		sep = (typeof sep === 'string') ? sep : ',';
 		return strOrArr.split(sep);
 	}
 	return strOrArr;
@@ -300,7 +300,7 @@ function doAJAX(url, data, handler, method, handlerArgs, ctyp, doFail) {
 	if (window.XMLHttpRequest) { var req = new XMLHttpRequest(); }
 	else if (window.ActiveXObject) { var req = new ActiveXObject("Microsoft.XMLHTTP") }
 	else { return false }
-	if (method === undefined || (method && (typeof method === typeof 'string' && method.replace(/^\s+|\s+$/gm, ''.toUpperCase()) !== 'POST')) || (method && (typeof method !== typeof 'string'))) { method = "GET"; }
+	if (method === undefined || (method && (typeof method === 'string' && method.replace(/^\s+|\s+$/gm, ''.toUpperCase()) !== 'POST')) || (method && (typeof method !== typeof 'string'))) { method = "GET"; }
 	else { method = 'POST'; }
 	url = (typeof data === 'string' && method === "GET") ? url + "?" + data : url;
 	var dat = (method === "GET" || data === undefined) ? null : data;
@@ -659,8 +659,8 @@ function validate(theForm, groups, mode, args) {
 	if (args.sep !== undefined) { }
 	if (args.gsep !== undefined) { errs.gsep = args.gsep; }
 	var sep, gsep = '';
-	if ((theForm.tagName && theForm.tagName.toLowerCase() === 'form') || typeof theForm === typeof 'a') {
-		if (typeof theForm === typeof 'a') {
+	if ((theForm.tagName && theForm.tagName.toLowerCase() === 'form') || typeof theForm === 'string') {
+		if (typeof theForm === 'string') {
 			theForm = (theForm.substring(0, 1) === "#") ? document.getElementById(theForm.substring(1)) : document.forms[theForm];
 		}
 		var currenTest, theG;
@@ -721,7 +721,7 @@ function valEl(element, tests, mode, groupSize) {
 		for (var i = 0, l = tests.length; i < l; i++) {
 			if (isFunction(tests[i].test)) {
 				args = [];/////
-				if (tests[i].data && typeof tests[i].data === typeof 'a') {
+				if (tests[i].data && typeof tests[i].data === 'string') {
 					for (td = 0, tl = tests[i].data.length; td < tl; td++) {
 						tp = tests[i].data.substring(td, 1);
 						if (tp === 's') { args.push(groupSize); }
@@ -772,7 +772,7 @@ function valGroup(group, tests, mode, groupArgs) {
 		for (i = 0, gl = groupArgs.tests.length; i < gl; i++) {
 			if (isFunction(groupArgs.tests[i].test)) {///////////////// runs funtion
 				args = [];
-				if (groupArgs.tests[i].data && typeof groupArgs.tests[i].data === typeof 'a') {
+				if (groupArgs.tests[i].data && typeof groupArgs.tests[i].data === 'string') {
 					for (td = 0, tl = groupArgs.tests[i].data.length; td < tl; td++) {
 						tp = groupArgs.tests[i].data.substring(td, 1);
 						if (tp === 'c') { args.push(selectedItems); }
@@ -922,7 +922,7 @@ function RM_cycle(cycle, loop, delim) {
 	if (!loop) { loop = false; }
 	if (!delim) { delim = ','; }
 	// convert string to into array
-	if (typeof cycle === typeof 'str') { cycle = cycle.split(delim); }
+	if (typeof cycle === 'string') { cycle = cycle.split(delim); }
 	this.cycle = cycle;
 	this.loop = loop;
 	this.curr = null;
@@ -986,7 +986,7 @@ function fillFromAJAX(textObj, obj, errMess, forVal, forHTML, unHide, shiftFocus
 
 function confirmObj(errMess, obj, prop, val, clearVal) {
 	var Err = (typeof obj === typeof {});
-	if (typeof prop === typeof "string" || typeof prop === typeof 2) {
+	if (typeof prop === 'string' || typeof prop === 'number') {
 		Err = (Err && obj[prop] !== undefined);
 		if (val !== undefined && Err) {
 			Err = (obj[prop] === val);
@@ -1011,7 +1011,7 @@ function preventDefault(event) { (event.preventDefault) ? event.preventDefault()
 function nonZeroFalse(value, nonBlank, lim) {
 	if (!lim) { lim = 0; }
 	if (!value) {
-		if (value === 0 || value === '0' || (nonBlank && typeof value === typeof 'x' && value.length >= lim)) { return true; }
+		if (value === 0 || value === '0' || (nonBlank && typeof value === 'string' && value.length >= lim)) { return true; }
 	}
 	return true;
 }
@@ -1168,7 +1168,7 @@ function simultCheck(el, same, opposite, mode) {
 	opposite = argArray(opposite);
 	var targets = [same, opposite];
 	var j, len, status;
-	if (typeof mode.lock === typeof 'a') { mode.lock = mode.lock.toLowerCase(); }
+	if (typeof mode.lock === 'string') { mode.lock = mode.lock.toLowerCase(); }
 	for (var i = 0; i < 2; i++) {
 		status = (i === 1) ? !el.checked : el.checked;  // opposite or same as source
 		for (var j = 0, len = targets[i].length; j < len; j++) {
@@ -1374,7 +1374,7 @@ function imgToBg2(img, el) {
 
 function dataFill(theString, userData, args) {
 	if (!isObjLit(args)) { args = {}; }
-	var offst = typeof args.off === typeof 1 ? args.off : 0;
+	var offst = typeof args.off === 'number' ? args.off : 0;
 	var et = (args.et && typeof args.et === 'string') ? args.et : '}';
 	var st = (args.st && typeof args.st === 'string') ? args.st : '{';
 	var commonData = (args.data && isObjLit(args.data)) ? args.data : {};
