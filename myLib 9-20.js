@@ -15,12 +15,12 @@ if (!Element.prototype.matches) {
 function argArray(args, propName) {
 	if (propName && typeof propName === 'string') { args = args[propName] }
 	if (args === undefined || false) return [];
-	if (typeof args !== typeof []) { args = [args]; }
+	if (!isArray(args)) { args = [args]; }
 	return args;
 }
 
 function defaultBlankObj(obj) {
-	if (typeof obj !== typeof {}) { return {}; }
+	if (!isObj(obj)) { return {}; }
 	return obj;
 }
 
@@ -68,7 +68,7 @@ function isNodeList(nodes) {
 
 ///////
 function getObjKeys(obj) {
-	if (typeof obj != typeof {}) { return []; }
+	if (!isObj(obj)) { return []; }
 	var keys = [];
 	for (var k in obj) {
 		if (obj.hasOwnProperty(k)) { keys.push(k); }
@@ -259,7 +259,7 @@ function AJAX(url, data, handler, method, ctyp, heds, cred) {				// ajax call: (
 	method = method.toUpperCase();
 	if (method != "POST") { method = "GET"; }
 	url = (data && typeof data == 'string' && method == "GET") ? url + "?" + data : url;
-	if (method == "POST" && typeof data == typeof {}) { data = JSON.stringify(data); }
+	if (method == "POST" && isObj(data)) { data = JSON.stringify(data); }
 	var dat = (method == "GET" || typeof data == 'undefined') ? null : data;    					///preps data to send, null for GET or undefined data, else data is passed as object
 	//console.log(data);
 	req.open(method, url, true);
@@ -268,7 +268,7 @@ function AJAX(url, data, handler, method, ctyp, heds, cred) {				// ajax call: (
 
 	//update 3-2018
 	//sets requests headers
-	if (typeof heds === typeof {}) {															// aditional headers
+	if (isObj(heds)) {															// aditional headers
 		var pair;
 		//console.log(heds);
 		for (pair in heds) {
@@ -282,8 +282,9 @@ function AJAX(url, data, handler, method, ctyp, heds, cred) {				// ajax call: (
 	/////
 	req.onreadystatechange = function () {
 		if (req.readyState == 4) {
-			var handlerArgs = (typeof handler == typeof [] && handler.length > 1) ? handler[1] : new Array();
-			var handlerFoo = (typeof handler == typeof []) ? handler[0] : handler;
+			var handerIsArr = isArray(handler);
+			var handlerArgs = (handerIsArr && handler.length > 1) ? handler[1] : new Array();
+			var handlerFoo = handerIsArr ? handler[0] : handler;
 			handlerFoo.apply(req, handlerArgs);
 		}
 	}
@@ -300,19 +301,19 @@ function doAJAX(url, data, handler, method, handlerArgs, ctyp, doFail) {
 	if (window.XMLHttpRequest) { var req = new XMLHttpRequest(); }
 	else if (window.ActiveXObject) { var req = new ActiveXObject("Microsoft.XMLHTTP") }
 	else { return false }
-	if (method === undefined || (method && (typeof method === 'string' && method.replace(/^\s+|\s+$/gm, ''.toUpperCase()) !== 'POST')) || (method && (typeof method !== typeof 'string'))) { method = "GET"; }
+	if (method === undefined || (method && (typeof method === 'string' && method.replace(/^\s+|\s+$/gm, ''.toUpperCase()) !== 'POST')) || (method && (typeof method !== 'string'))) { method = "GET"; }
 	else { method = 'POST'; }
 	url = (typeof data === 'string' && method === "GET") ? url + "?" + data : url;
 	var dat = (method === "GET" || data === undefined) ? null : data;
 	req.open(method, url, true);
-	ctyp = (typeof ctyp !== typeof 'string') ? ctyp : "application/x-www-form-urlencoded";
+	ctyp = (typeof ctyp !== 'string') ? ctyp : "application/x-www-form-urlencoded";
 	if (method == "POST") { req.setRequestHeader("Content-type", ctyp); }
 	req.send(dat);
 	req.onreadystatechange = function () {
 		if (req.readyState == 4) {
 			if (handlerArgs !== undefined) {
 				var arry = [req.responseText];
-				if (typeof handlerArgs === typeof []) { arry = arry.concat(handlerArgs); }
+				if (isArray(handlerArgs)) { arry = arry.concat(handlerArgs); }
 				else { arry.push(handlerArgs) }
 			}
 			if (req.status == 200) { handler.apply(this, arry); }
@@ -985,7 +986,7 @@ function fillFromAJAX(textObj, obj, errMess, forVal, forHTML, unHide, shiftFocus
 }
 
 function confirmObj(errMess, obj, prop, val, clearVal) {
-	var Err = (typeof obj === typeof {});
+	var Err = (isObj(obj));
 	if (typeof prop === 'string' || typeof prop === 'number') {
 		Err = (Err && obj[prop] !== undefined);
 		if (val !== undefined && Err) {
@@ -998,7 +999,7 @@ function confirmObj(errMess, obj, prop, val, clearVal) {
 }
 
 function trim(str, side, lTrim, rTrim) {
-	if (typeof str !== typeof 'x') return str;
+	if (typeof str !== 'string') return str;
 	if (!lTrim) { lTrim = /^\s*/; }
 	if (!lTrim) { rTrim = /\s*$/; }
 	if (!side || side === 'l' || side === 'L') { str = str.replace(lTrim, ''); }
@@ -1033,15 +1034,12 @@ function getFormElemets(form, veri) {
 	}
 }
 
-
 function getSets(form, name, checked) {
 	if (form.querySelectorAll === undefined) { return []; }
 	checked = (checked) ? ':checked' : '';
 	var set = form.querySelectorAll('*[name="' + name + '"]' + checked)
 }
 /////////
-
-
 
 function require(obj, min, ct) {
 	if (isNodeList(obj)) { obj = obj.item(0); }
@@ -1359,7 +1357,7 @@ function copyInputToClip(el) {
 
 function rm_cloneData(item, deep) {
 	if (deep) { return JSON.parse(stringify(item)); }
-	if (typeof item === typeof []) { return item.slice(); }
+	if (isArray(item)) { return item.slice(); }
 	var copy;
 	for (var attr in obj) {
 		if (obj.hasOwnProperty(attr)) { copy[attr] = clone(obj[attr]); }
