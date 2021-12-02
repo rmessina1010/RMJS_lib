@@ -1582,9 +1582,9 @@ function nonBinaryToggle(currentState, states) {
 
 function* cycleThrough(arr, loop = false, start = 0) {
 	for (let i = start, l = arr.length; i < l; i++) {
-		if (loop && i >= l - 1) { i = 0; }
 		let res = arr[i];
 		yield res;
+		if (loop && i >= l - 1) { i = -1; }
 	}
 	return
 }
